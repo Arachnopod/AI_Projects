@@ -146,7 +146,6 @@ def recursiveDFS (problem, curState, dirs = [], explored = [], possible_path = F
 
 def breadthFirstSearch(problem):
     "Search the shallowest nodes in the search tree first. [p 81]"
-    "*** YOUR CODE HERE ***"
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
@@ -161,7 +160,7 @@ def breadthFirstSearch(problem):
     directions, possible_path = BFSHelper (problem, curState=startState, frontier = [startStateNode]) #problem and current state's location
     if not possible_path: print "COULDN'T FIND ANYTHING"
     path = bfsPathHelper(directions)
-    #print "final path returned: ", path
+    print "final path returned: ", path
     #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
     #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
     #print "one successor: ",successor[0] #get the position of the successor
@@ -193,7 +192,7 @@ def BFSHelper (problem, curState, frontier, explored = [], possible_path = False
         curStateNode = frontier.pop(0)
         curState = curStateNode[0]
 
-        # successorsTriplets holds list of triplets of successorsTriplets
+        # successorsTriplets holds a list of triplets
         successorsTriplets = problem.getSuccessors(curState)
 
         for successorNumber in range(len(successorsTriplets)):
@@ -224,11 +223,9 @@ def bfsPathHelper(explored):
         # save parent location so it can be looked for
         #  similar to a linked list
         parent = pathElement[1]
-        if len(explored) is not 0: pathElement = explored.pop()
-        while parent is not pathElement[0] and len(explored) is not 0:
+        while parent is not pathElement[0][0] and len(explored) is not 0:
             pathElement = explored.pop()
-            if len(explored) is 0 and parent is pathElement[0]:
-                path.append(toDir(pathElement[0][1]))
+
     #path.append(saveThis)
     #print path[::-1]
     return path[::-1]
