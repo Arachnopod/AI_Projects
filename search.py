@@ -295,7 +295,7 @@ def UCSHelper (problem, curState, frontier, explored = [], possible_path = False
     while not frontier.isEmpty():
         print "iterating"
         # print "frontier now: ", frontier
-        print "explored now: ", explored
+    #    print "explored now: ", explored
 
         # frontier is a PriorityQueue
         # parentState = curState
@@ -313,7 +313,7 @@ def UCSHelper (problem, curState, frontier, explored = [], possible_path = False
                     #print "Found the GOAL"
                     explored.append([successors[successorNumber], curState[0]])
                     #for i in range(len(explored)):
-                    #    print explored[i]
+                        #print explored[i]
                     return explored, True
                 else:
                     thisCost = successors[successorNumber][2]
@@ -377,32 +377,65 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     e = Directions.EAST
     n = Directions.NORTH
 
+    
     initialState = (problem.getStartState(), "No Direction", 0)
+    
     print"This is the start state at the very beginning: ", initialState
+    
     initialStateNode = (initialState, 0) #state, g(n)
+    
     print"This is the start state node: ", initialStateNode
+    
     #state node, f(n)
+    
     frontier = PriorityQueue()
+    
     frontier.push(initialStateNode, heuristic(problem.getStartState(),problem))
+    
     # list of tuples. Each tuple is of the form [curStateNode, parentStateNode]
+    
     explored = []
+    
     explored.append([initialStateNode, initialStateNode])
+    
     if problem.isGoalState(problem.getStartState()):
+    
         return []
+    
     #path = the path
+    
     #foundSol = true if path found; false if no path found
     
-    path, foundSol= aStarHelper(problem=problem, curStateNode=initialStateNode,frontier=frontier,heuristic=heuristic, explored = explored)
+
+    
+    path, foundSol = aStarHelper(problem=problem, curStateNode=initialStateNode,frontier=frontier,heuristic=heuristic, explored = explored)
+    
     if not foundSol: print "COULDN'T FIND ANYTHING"
 
+
+
+    
     path = aStarPathHelper(path)
+
+    
     print "returning processed path: ", path
+
+    
     #print "final path returned: ", path
+
+    
     #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
+
+    
     #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
+
+    
     #print "one successor: ",successor[0] #get the position of the successor
+
+    
     #print "SUCCESSOR OF O: ", problem.getSuccessors(successor[0]) #successor of the successor
-    return  path #[s,s,w,s,w,w,s,w]
+    
+    return  path
 
 #curStateNode = a friontierNode
 #frontier = priority queue ordered by f(n)
@@ -434,7 +467,7 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 #oldFn = Fn of node in explored
                 oldFn = explored[i][0][0][2] + heuristic(explored[i][0][0][0], problem)
                 #oldFN = FN of node in explored
-                print successorFn - oldFn
+                #print successorFn - oldFn
                 if oldFn > successorFn:
                    print "In if statement in aStarHelper. This statement needs to be fixed."
                    #    remove the element in explored containing oldFN
@@ -456,7 +489,7 @@ def aStarPathHelper(explored):
     explored is a list of these: [((1,2), "direction", 1), ((1,3), "direction", 1)]
                   which is also: [ child, parent ]
     """
-    print "explored: ", explored
+#    print "explored: ", explored
     saveThis = toDir(explored[0][0][0][1]) #dir
     path = []
     pathElement = explored.pop() #[stateNodeChild, stateNodeParent]
