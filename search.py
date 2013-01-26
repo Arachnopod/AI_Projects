@@ -225,7 +225,8 @@ def bfsPathHelper(explored):
         parent = pathElement[1]
         while parent is not pathElement[0][0] and len(explored) is not 0:
             pathElement = explored.pop()
-
+    if parent is pathElement[0][0]:
+        path.append(toDir(pathElement[0][1]))
     #path.append(saveThis)
     #print path[::-1]
     return path[::-1]
