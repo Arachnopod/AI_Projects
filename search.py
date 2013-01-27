@@ -287,15 +287,15 @@ def uniformCostSearch(problem):
 
 # note: we use the boolean in orver to backtrack
 def UCSHelper (problem, curState, frontier, explored = [], possible_path = False):
-    print "Is (1,1) the goal state ", problem.isGoalState((1,1))
-    print "just came in to UCSHelper"
-    print "curState inside BFS: ", curState
+    #print "Is (1,1) the goal state ", problem.isGoalState((1,1))
+    #print "just came in to UCSHelper"
+    #print "curState inside BFS: ", curState
 
     #Base case
     while not frontier.isEmpty():
-        print "iterating"
+        #print "iterating"
         # print "frontier now: ", frontier
-        print "explored now: ", explored
+        #print "explored now: ", explored
 
         # frontier is a PriorityQueue
         # parentState = curState
@@ -303,7 +303,7 @@ def UCSHelper (problem, curState, frontier, explored = [], possible_path = False
         curState = frontier.pop()
         oldCost = curState[1]
 
-        print "curState now: ", curState
+        #print "curState now: ", curState
         successors = problem.getSuccessors(curState[0][0])
 
         for successorNumber in range(len(successors)):
@@ -415,7 +415,6 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
         
         #list of successors states (not nodes) of current state
         successors = problem.getSuccessors(curStateCoords)
-        
         for successorIndex in range(len(successors)):
             thisSuccessor = successors[successorIndex]
             #sucessorIndex's g(n) = parent's g(n) + cost of going from parent to this sucessorIndex
@@ -431,7 +430,6 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 oldFn = explored[i][0][1] + heuristic(explored[i][0][0][0], problem)
                 #oldFN = FN of node in explored
                 if oldFn > successorFn:
-                   print "In if statement in aStarHelper. This statement needs to be fixed."
                    # in explored, change the first element of the given tuple to be thisSuccessor
                    toAppend = [(thisSuccessor, successorGn), curStateNode]
                    explored.append(toAppend)
@@ -452,7 +450,6 @@ def aStarPathHelper(explored):
     explored is a list of these: [((1,2), "direction", 1), ((1,3), "direction", 1)]
                   which is also: [ child, parent ]
     """
-    print "explored: ", explored
     saveThis = toDir(explored[0][0][0][1]) #dir
     path = []
     pathElement = explored.pop() #[stateNodeChild, stateNodeParent]

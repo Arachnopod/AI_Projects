@@ -375,7 +375,7 @@ class CornersProblem(search.SearchProblem):
     if state[0] not in self._visited:
       self._visited[state[0]] = True
       self._visitedlist.append(state[0])
-    
+
     return successors
 
   def getCostOfActions(self, actions):
@@ -396,11 +396,11 @@ def cornersHeuristic(state, problem):
   """
   A heuristic for the CornersProblem that you defined.
   
-    state:   The current search state 
+    state:   The current search state
              (a data structure you chose in your search problem)
-    
-    problem: The CornersProblem instance for this layout.  
-    
+
+    problem: The CornersProblem instance for this layout.
+
   This function should always return a number that is a lower bound
   on the shortest path from the state to a goal of the problem; i.e.
   it should be admissible.  (You need not worry about consistency for
@@ -408,24 +408,23 @@ def cornersHeuristic(state, problem):
   """
   corners = problem.corners # These are the corner coordinates
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-  
+
   "*** YOUR CODE HERE ***"
   #return 0 # Default to trivial solution
-  currentLocataion = state[0] #pacman location
+  currentLocation = state[0] #pacman location
   goals = problem.goal
   # This would be the Manhattan Distance
   #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-  # This is basically a new Manhattan Distance
-
   #goals = ((1, 12), (28, 1), (1, 1), (28, 12))
+
   accumulator = 0
   for i in range(len(goals)):
       if not state[1][i]:
-        j = findClosestFood (currentLocataion, goals)
-        #accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
-        accumulator += abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
-        #currentLocataion = goals[j]
-  return accumulator
+        j = findClosestFood (currentLocation, goals)
+        #accumulator += abs(currentLocation[0] - goals[i][0]) + abs(currentLocation[1] - goals[i][1])
+        accumulator += abs(currentLocation[0] - goals[j][0]) + abs(currentLocation[1] - goals[j][1])
+        currentLocation = goals[j]
+    return accumulator
 
 def findDistanceBetweenPairOfPoints(p1, p2):
     import math
@@ -536,7 +535,20 @@ def foodHeuristic(state, problem):
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
   position, foodGrid = state
+ #print "Let's pretend were in location", position
+  #print "A food grid says"
+  #print foodGrid.asList()
+  print
   "*** YOUR CODE HERE ***"
+  #  min(Manhattan Distance)
+  xy1 = position
+  accumulator = 0
+  for xy2 in foodGrid.asList():
+    accumulator += abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+  return accumulator
+
+
+
   return 0
   
 class ClosestDotSearchAgent(SearchAgent):
