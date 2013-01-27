@@ -416,14 +416,15 @@ def cornersHeuristic(state, problem):
   "*** YOUR CODE HERE ***"
   #return 0 # Default to trivial solution
   currentLocataion = state[0]
-  fourGoalLocations = problem.goal
+  goals = problem.goal
   # This would be the Manhattan Distance
   #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
   # This is basically a new Manhattan Distance
   accumulator = 0
-  for location in fourGoalLocations:
-      accumulator += abs(currentLocataion[0] - location[0]) + abs(currentLocataion[1] - location[1])
+  for i in range(len(goals)):
+      if not state[1][i]:
+        accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
   return accumulator
 
 class AStarCornersAgent(SearchAgent):

@@ -405,34 +405,15 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #path = the path
     
     #foundSol = true if path found; false if no path found
-    
-
-    
     path, foundSol = aStarHelper(problem=problem, curStateNode=initialStateNode,frontier=frontier,heuristic=heuristic, explored = explored)
     
     if not foundSol: print "COULDN'T FIND ANYTHING"
-
-
-
     
     path = aStarPathHelper(path)
-
-    
     print "returning processed path: ", path
-
-    
-    #print "final path returned: ", path
-
-    
     #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
-
-    
     #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
-
-    
     #print "one successor: ",successor[0] #get the position of the successor
-
-    
     #print "SUCCESSOR OF O: ", problem.getSuccessors(successor[0]) #successor of the successor
     
     return  path
@@ -465,7 +446,7 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 i += 1
             if thisSuccessor[0] == explored[i][0][0][0]:
                 #oldFn = Fn of node in explored
-                oldFn = explored[i][0][0][2] + heuristic(explored[i][0][0][0], problem)
+                oldFn = explored[i][0][1] + heuristic(explored[i][0][0][0], problem)
                 #oldFN = FN of node in explored
                 #print successorFn - oldFn
                 if oldFn > successorFn:
