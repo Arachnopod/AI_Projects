@@ -417,18 +417,29 @@ def cornersHeuristic(state, problem):
   #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
   # This is basically a new Manhattan Distance
 
+  #goals is a list of all goals.
   goals = []
+  tfVals = []
   for i in range(len(problem.goal)):
       goals.append(problem.goal[i])
+      tfVals.append( state[1][i])
         
   accumulator = 0
-  for i in range(len(goals)):
-      if not state[1][i]:
-        j = findClosestFood (currentLocataion, goals)
-        #accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
-        accumulator += abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
-        currentLocataion = goals[j]
-        goals.remove(goals[j])
+  i = 0
+  while len(tfVals) != 0 and i < len(tfVals):
+      
+    print "for i =  ",i
+    print "tf vals: ",tfVals
+    if i < len(tfVals):
+        if not tfVals[i]:
+            j = findClosestFood (currentLocataion, goals)
+            #accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
+            accumulator += abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
+            currentLocataion = goals[j]
+            goals.remove(goals[j])
+            tfVals.remove(tfVals[j])
+    i+=1
+        
   return accumulator
 
 def findDistanceBetweenPairOfPoints(p1, p2):
