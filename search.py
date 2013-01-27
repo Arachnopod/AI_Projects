@@ -411,21 +411,17 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
     while not frontier.isEmpty():
         curStateNode = frontier.pop()
         curStateGn = curStateNode[1]
-        #print "curStateGn, ", curStateGn 
         curStateCoords = curStateNode[0][0] #(x,y)
-        #print "curStateCoords, ", curStateCoords
         
         #list of successors states (not nodes) of current state
         successors = problem.getSuccessors(curStateCoords)
         
         for successorIndex in range(len(successors)):
             thisSuccessor = successors[successorIndex]
-            #print "sucessorIndex: ", sucessorIndex
             #sucessorIndex's g(n) = parent's g(n) + cost of going from parent to this sucessorIndex
             successorGn = curStateGn + thisSuccessor[2] 
             successorFn = successorGn + heuristic(curStateCoords, problem)
-            #print "explored ",  explored
-            #print "successor's location: ", successors[sucessorIndex][0]
+
             #if this (x, y ) has already been explored
             i = 0
             while i < len(explored) - 1 and thisSuccessor[0] != explored[i][0][0][0] :
@@ -436,9 +432,9 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 #oldFN = FN of node in explored
                 if oldFn > successorFn:
                    print "In if statement in aStarHelper. This statement needs to be fixed."
-                   # remove the element in explored containing oldFN
-                   #explored[i][0] = [thisSuccessor, successorFn]  
-                   # print "explored of i: ", explored [i]
+                   # in explored, change the first element of the given tuple to be thisSuccessor
+                   toAppend = [(thisSuccessor, successorGn), curStateNode]
+                   explored.append(toAppend)
                 else: continue # Required to go to next successor in for-loop
                
             else:

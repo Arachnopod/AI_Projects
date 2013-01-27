@@ -333,10 +333,7 @@ class CornersProblem(search.SearchProblem):
   #  print "comparison: ", state[1][1] == True  and state[1][0] == True
   #  print "state after isGoal (from isGoalState)", state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True
     if state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True:
-        print "============ True (from isGoalState)"
         return True
-            
-  #  print "================== False (from isGoalState)"
     return False
        
   def getSuccessors(self, state):
@@ -379,7 +376,6 @@ class CornersProblem(search.SearchProblem):
       self._visited[state[0]] = True
       self._visitedlist.append(state[0])
     
-  #  print "allScuccessors (from getSuccessors): ", successors
     return successors
 
   def getCostOfActions(self, actions):
@@ -415,19 +411,20 @@ def cornersHeuristic(state, problem):
   
   "*** YOUR CODE HERE ***"
   #return 0 # Default to trivial solution
-  currentLocataion = state[0]
+  currentLocataion = state[0] #pacman location
   goals = problem.goal
   # This would be the Manhattan Distance
   #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
   # This is basically a new Manhattan Distance
-  print state[1]
-  goals = ((1, 12), (28, 1), (1, 1), (28, 12))
+
+  #goals = ((1, 12), (28, 1), (1, 1), (28, 12))
   accumulator = 0
   for i in range(len(goals)):
       if not state[1][i]:
         j = findClosestFood (currentLocataion, goals)
         #accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
-        accumulator += 2*abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
+        accumulator += abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
+        #currentLocataion = goals[j]
   return accumulator
 
 def findDistanceBetweenPairOfPoints(p1, p2):
