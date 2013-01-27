@@ -1,6 +1,5 @@
 # search.py
 # ---------
-# This just got added
 # Licensing Information: Please do not distribute or publish solutions to this
 # project. You are free to use and extend these projects for educational
 # purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
@@ -178,6 +177,7 @@ def breadthFirstSearch(problem):
 
 #curState = (x, y)
 #frontier = list of stateNodes
+#stateNodes = triplet (state, direction, path cost)
 #explored = list of tuples: (newState, dir, pathcost), (newState, dir, pathcost)
 # note: we use the boolean in orver to backtrack
 def BFSHelper (problem, curState, frontier, explored = [], possible_path = False):
@@ -432,20 +432,20 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 i += 1
             if thisSuccessor[0] == explored[i][0][0][0]:
                 #oldFn = Fn of node in explored
-                oldFn = explored[i][0][0][2] + heuristic(explored[i][0][0][0], problem)
+                oldFn = explored[i][0][1] + heuristic(explored[i][0][0][0], problem)
                 #oldFN = FN of node in explored
-                print successorFn - oldFn
                 if oldFn > successorFn:
                    print "In if statement in aStarHelper. This statement needs to be fixed."
-                   #    remove the element in explored containing oldFN
-                   explored[i] = [thisSuccessor, successorGn]  
-                   
+                   # remove the element in explored containing oldFN
+                   #explored[i][0] = [thisSuccessor, successorFn]  
+                   # print "explored of i: ", explored [i]
                 else: continue # Required to go to next successor in for-loop
                
             else:
                 successorNode = (thisSuccessor, successorGn)
                 explored.append([successorNode, curStateNode])
                 frontier.push(successorNode, successorFn)
+
                 if problem.isGoalState(successorNode[0][0]) :
                     return explored, True
 
@@ -479,6 +479,8 @@ def aStarPathHelper(explored):
                 path.append(toDir(pathElement[0][0][1]))
     #path.append(saveThis)
     #print path[::-1]
+    if None in path:
+        path.remove(None)
     return path[::-1]
 
 # Abbreviations

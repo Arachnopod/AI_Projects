@@ -319,8 +319,8 @@ class CornersProblem(search.SearchProblem):
   def isGoalState(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** YOUR CODE HERE ***"
-    print "all goals (from isGoalState): ", self.corners
-    print "state b4 isGoal (from isGoalState)", state
+  #  print "all goals (from isGoalState): ", self.corners
+  #  print "state b4 isGoal (from isGoalState)", state
 
     if state[0] == self.goal[0]:
         state[1][0] = True
@@ -330,13 +330,13 @@ class CornersProblem(search.SearchProblem):
         state[1][2] = True
     if state[0] == self.goal[3]:
         state[1][3] = True
-    print "comparison: ", state[1][1] == True  and state[1][0] == True
-    print "state after isGoal (from isGoalState)", state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True
+  #  print "comparison: ", state[1][1] == True  and state[1][0] == True
+  #  print "state after isGoal (from isGoalState)", state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True
     if state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True:
         print "============ True (from isGoalState)"
         return True
             
-    print "================== False (from isGoalState)"
+  #  print "================== False (from isGoalState)"
     return False
        
   def getSuccessors(self, state):
@@ -351,7 +351,7 @@ class CornersProblem(search.SearchProblem):
      cost of expanding to that successor
     """
     
-    print "this is the state from corners problem: ", state
+  #  print "this is the state from corners problem: ", state
     successors = []
     for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
       # Add a successor state to the successor list if the action is legal
@@ -365,7 +365,11 @@ class CornersProblem(search.SearchProblem):
       dx, dy = Actions.directionToVector(action)
       nextx, nexty = int(x + dx), int(y + dy)
       if not self.walls[nextx][nexty]:
-        nextState = ((nextx, nexty),state[1])
+        newCornerList = [False,False,False,False]
+        for i in range(len(newCornerList)):
+            if state[1][i] is True:
+                newCornerList[i] = True
+        nextState = ((nextx, nexty),newCornerList)
         cost = self.costFn(nextState)
         successors.append( ( nextState, action, cost) )
       "*** YOUR CODE HERE ***"
@@ -375,7 +379,7 @@ class CornersProblem(search.SearchProblem):
       self._visited[state[0]] = True
       self._visitedlist.append(state[0])
     
-    print "allScuccessors (from getSuccessors): ", successors  
+  #  print "allScuccessors (from getSuccessors): ", successors
     return successors
 
   def getCostOfActions(self, actions):
@@ -410,8 +414,43 @@ def cornersHeuristic(state, problem):
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
   
   "*** YOUR CODE HERE ***"
-  return 0 # Default to trivial solution
+  #return 0 # Default to trivial solution
+  currentLocataion = state[0]
+  goals = problem.goal
+  # This would be the Manhattan Distance
+  #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+  # This is basically a new Manhattan Distance
+  print state[1]
+  goals = ((1, 12), (28, 1), (1, 1), (28, 12))
+  accumulator = 0
+  for i in range(len(goals)):
+      if not state[1][i]:
+        j = findClosestFood (currentLocataion, goals)
+        #accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
+        accumulator += 2*abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
+  return accumulator
 
+def findDistanceBetweenPairOfPoints(p1, p2):
+    import math
+    from math import hypot
+    
+    x1 = p1[0]
+    y1 = p1[1]
+    x2 = p2[0]
+    y2 = p2[1]
+    dist = math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
+    #dist = abs(math.hypot(x2-x1, y2-y1))
+    return dist
+
+def findClosestFood(cur, food):
+    minDistIndex = -1;
+    minDist = -1;
+    for i in range(len(food)):
+        dist = findDistanceBetweenPairOfPoints(cur, food[i])
+        if minDist == -1 or minDist > dist:
+            minDist = dist
+            minDistIndex = i
+    return minDistIndex
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
   def __init__(self):
