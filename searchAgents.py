@@ -427,9 +427,9 @@ def cornersHeuristic(state, problem):
   accumulator = 0
   i = 0
   while len(tfVals) != 0 and i < len(tfVals):
-      
-    print "for i =  ",i
-    print "tf vals: ",tfVals
+
+#    print "for i =  ",i
+#    print "tf vals: ",tfVals
     if i < len(tfVals):
         if not tfVals[i]:
             j = findClosestFood (currentLocataion, goals)
@@ -442,7 +442,7 @@ def cornersHeuristic(state, problem):
         
   return accumulator
 
-def findDistanceBetweenPairOfPoints(p1, p2):
+def manhattanDistance(p1, p2):
     import math
     from math import hypot
     
@@ -450,15 +450,14 @@ def findDistanceBetweenPairOfPoints(p1, p2):
     y1 = p1[1]
     x2 = p2[0]
     y2 = p2[1]
-    dist = math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
-    #dist = abs(math.hypot(x2-x1, y2-y1))
+    dist = abs(x1 - x2) + abs(y1 - y2)
     return dist
 
 def findClosestFood(cur, food):
     minDistIndex = -1;
     minDist = -1;
     for i in range(len(food)):
-        dist = findDistanceBetweenPairOfPoints(cur, food[i])
+        dist = manhattanDistance(cur, food[i])
         if minDist == -1 or minDist > dist:
             minDist = dist
             minDistIndex = i
@@ -552,7 +551,59 @@ def foodHeuristic(state, problem):
   """
   position, foodGrid = state
   "*** YOUR CODE HERE ***"
-  return 0
+  #return 0
+  currentLocataion = state[0] #pacman location
+  goals = state[1].asList()
+  # This would be the Manhattan Distance
+  #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+  # This is basically a new Manhattan Distance
+  #goals is a list of all goals.
+  if len(goals) > 2:
+  ## REMAINS TO BE FILLED IN ##
+    distBetweenGoals, goal1, goal2  = findMostDistantGoals(currentLocataion, goals)
+    distToGoal1 = manhattanDistance(currentLocataion, goal1)
+    distToGoal2 = manhattanDistance(currentLocataion, goal2)
+    if distToGoal1 < distToGoal2:
+      toRet = distToGoal1 + distBetweenGoals
+      return toRet
+    else:
+      toRet = distToGoal2 + distBetweenGoals
+      return toRet
+  elif len(goals) == 2:
+      toRet = manhattanDistance(currentLocataion, goals[0]) + manhattanDistance(currentLocataion, goals[1])
+      return toRet
+  else:
+      toRet = manhattanDistance(currentLocataion, goals[0])
+      return toRet
+
+def manhattanDistance(p1, p2):
+    import math
+    from math import hypot
+    
+    x1 = p1[0]
+    y1 = p1[1]
+    x2 = p2[0]
+    y2 = p2[1]
+    dist = abs(x1 - x2) + abs(y1 - y2)
+    #dist = abs(math.hypot(x2-x1, y2-y1))
+    return dist
+
+def findMostDistantGoals(now, goals):
+  maxDist = 0
+  bestFirst = goals[0]
+  bestSecond = goals[1]
+  for i in range(len(goals)):
+    thisGoal = goals.pop()
+    if len(goals) > 0:
+      for j in range(len(goals)):
+        dist = manhattanDistance(thisGoal, goals[j])
+        if dist > maxDist:
+          maxDist = dist
+          bestFirst = thisGoal
+          bestSecond = goals[j]
+    else: return maxDist, bestFirst, bestSecond
+
+
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"

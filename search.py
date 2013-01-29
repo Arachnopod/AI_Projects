@@ -419,7 +419,7 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
         for successorIndex in range(len(successors)):
             thisSuccessor = successors[successorIndex]
             #sucessorIndex's g(n) = parent's g(n) + cost of going from parent to this sucessorIndex
-            successorGn = curStateGn + thisSuccessor[2] 
+            successorGn = curStateGn + thisSuccessor[2]
             successorFn = successorGn + heuristic(curStateCoords, problem)
 
             #if this (x, y ) has already been explored
@@ -431,7 +431,6 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 oldFn = explored[i][0][1] + heuristic(explored[i][0][0][0], problem)
                 #oldFN = FN of node in explored
                 if oldFn > successorFn:
-                   print "In if statement in aStarHelper. This statement needs to be fixed."
                    # in explored, change the first element of the given tuple to be thisSuccessor
                    toAppend = [(thisSuccessor, successorGn), curStateNode]
                    explored.append(toAppend)
