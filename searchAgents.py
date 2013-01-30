@@ -549,44 +549,23 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount'] = problem.walls.count()
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
-  position, foodGrid = state
-  "*** YOUR CODE HERE ***"
-  #return 0
   currentLocataion = state[0] #pacman location
   goals = state[1].asList()
-  # This would be the Manhattan Distance
-  #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-  # This is basically a new Manhattan Distance
-  #goals is a list of all goals.
   if len(goals) > 2:
-  ## REMAINS TO BE FILLED IN ##
     distBetweenGoals, goal1, goal2  = findMostDistantGoals(currentLocataion, goals)
     distToGoal1 = manhattanDistance(currentLocataion, goal1)
     distToGoal2 = manhattanDistance(currentLocataion, goal2)
     if distToGoal1 < distToGoal2:
-      toRet = distToGoal1 + distBetweenGoals
-      return toRet
+      return distToGoal1 + distBetweenGoals
     else:
-      toRet = distToGoal2 + distBetweenGoals
-      return toRet
+      return distToGoal2 + distBetweenGoals
   elif len(goals) == 2:
-      toRet = manhattanDistance(currentLocataion, goals[0]) + manhattanDistance(currentLocataion, goals[1])
-      return toRet
-  else:
-      toRet = manhattanDistance(currentLocataion, goals[0])
-      return toRet
+      return manhattanDistance(currentLocataion, goals[0]) + manhattanDistance(currentLocataion, goals[1])
+  else: 
+    return manhattanDistance(currentLocataion, goals[0])
 
 def manhattanDistance(p1, p2):
-    import math
-    from math import hypot
-    
-    x1 = p1[0]
-    y1 = p1[1]
-    x2 = p2[0]
-    y2 = p2[1]
-    dist = abs(x1 - x2) + abs(y1 - y2)
-    #dist = abs(math.hypot(x2-x1, y2-y1))
-    return dist
+    return abs(p1[0] - p2[0]) + abs (p1[1] - p2[1])
 
 def findMostDistantGoals(now, goals):
   maxDist = 0
