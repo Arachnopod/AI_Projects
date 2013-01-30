@@ -311,7 +311,6 @@ class CornersProblem(search.SearchProblem):
     "Returns the start state (in your state space, not the full Pacman state space)"
     "*** YOUR CODE HERE ***"
     #return self.startingPosition
-    print "startState from getStatrtState: ",self.startState
     return self.startState
     #util.raiseNotDefined()
     
@@ -319,8 +318,6 @@ class CornersProblem(search.SearchProblem):
   def isGoalState(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** YOUR CODE HERE ***"
-  #  print "all goals (from isGoalState): ", self.corners
-  #  print "state b4 isGoal (from isGoalState)", state
 
     if state[0] == self.goal[0]:
         state[1][0] = True
@@ -330,8 +327,6 @@ class CornersProblem(search.SearchProblem):
         state[1][2] = True
     if state[0] == self.goal[3]:
         state[1][3] = True
-  #  print "comparison: ", state[1][1] == True  and state[1][0] == True
-  #  print "state after isGoal (from isGoalState)", state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True
     if state[1][0] == True and state[1][1] ==  True and state[1][2] == True and state[1][3] == True:
         return True
     return False
@@ -348,7 +343,6 @@ class CornersProblem(search.SearchProblem):
      cost of expanding to that successor
     """
     
-  #  print "this is the state from corners problem: ", state
     successors = []
     for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
       # Add a successor state to the successor list if the action is legal
@@ -362,11 +356,14 @@ class CornersProblem(search.SearchProblem):
       dx, dy = Actions.directionToVector(action)
       nextx, nexty = int(x + dx), int(y + dy)
       if not self.walls[nextx][nexty]:
-        newCornerList = [False,False,False,False]
-        for i in range(len(newCornerList)):
-            if state[1][i] is True:
-                newCornerList[i] = True
-        nextState = ((nextx, nexty),newCornerList)
+        visited = []
+        for i in range(len(state[1])):
+            if state[1][i]:
+                visited.append(True)
+            else:
+                visited.append(False)
+                
+        nextState = ((nextx, nexty),visited)
         cost = self.costFn(nextState)
         successors.append( ( nextState, action, cost) )
       "*** YOUR CODE HERE ***"
@@ -375,7 +372,7 @@ class CornersProblem(search.SearchProblem):
     if state[0] not in self._visited:
       self._visited[state[0]] = True
       self._visitedlist.append(state[0])
-    
+     
     return successors
 
   def getCostOfActions(self, actions):
@@ -410,59 +407,50 @@ def cornersHeuristic(state, problem):
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
   
   "*** YOUR CODE HERE ***"
-  #return 0 # Default to trivial solution
-  currentLocataion = state[0] #pacman location
-  goals = problem.goal
-  # This would be the Manhattan Distance
-  #return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-  # This is basically a new Manhattan Distance
+  currentLocation = state[0] #pacman location
 
-  #goals is a list of all goals.
-  goals = []
-  tfVals = []
-  for i in range(len(problem.goal)):
-      goals.append(problem.goal[i])
-      tfVals.append( state[1][i])
-        
+  goals = [] # goals is a list of unvisited goals.
+  for i in range(len(problem.corners)):
+      if not state[1][i]: #state of [1][i] = False if the goal has not been visited
+          goals.append(problem.corners[i])
+ 
   accumulator = 0
-  i = 0
-  while len(tfVals) != 0 and i < len(tfVals):
-      
-    print "for i =  ",i
-    print "tf vals: ",tfVals
-    if i < len(tfVals):
-        if not tfVals[i]:
-            j = findClosestFood (currentLocataion, goals)
-            #accumulator += abs(currentLocataion[0] - goals[i][0]) + abs(currentLocataion[1] - goals[i][1])
-            accumulator += abs(currentLocataion[0] - goals[j][0]) + abs(currentLocataion[1] - goals[j][1])
-            currentLocataion = goals[j]
-            goals.remove(goals[j])
-            tfVals.remove(tfVals[j])
-    i+=1
-        
+  while len(goals) != 0: 
+    j = findClosestCorner (currentLocation, goals)
+    accumulator += findManhattanDistanceOfPairOfPoints(currentLocation, goals[j])
+    currentLocation = goals[j] #move the current location to goal [j]
+    goals.remove(goals[j]) # remove goal[j] from the list of unvisited goals
+         
   return accumulator
 
-def findDistanceBetweenPairOfPoints(p1, p2):
-    import math
-    from math import hypot
+# returns the Manhattan distance between point p1 and point p2
+def findManhattanDistanceOfPairOfPoints(p1, p2):
     
     x1 = p1[0]
     y1 = p1[1]
     x2 = p2[0]
     y2 = p2[1]
-    dist = math.sqrt( (x2 - x1)**2 + (y2 - y1)**2 )
-    #dist = abs(math.hypot(x2-x1, y2-y1))
+    dist = abs(x1 - x2) + abs(y1 - y2)
     return dist
 
-def findClosestFood(cur, food):
-    minDistIndex = -1;
-    minDist = -1;
-    for i in range(len(food)):
-        dist = findDistanceBetweenPairOfPoints(cur, food[i])
-        if minDist == -1 or minDist > dist:
+#returns the index in food where the closest food is
+def findClosestCorner(cur, corners):
+    minDistIndex = -1
+    minDist = -1
+    for i in range(len(corners)):
+        dist = findManhattanDistanceOfPairOfPoints(cur, corners[i])
+        if minDist == -1 or minDist >= dist:
             minDist = dist
             minDistIndex = i
     return minDistIndex
+
+class AStarCornersAgent(SearchAgent):
+  "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
+  def __init__(self):
+    self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
+    self.searchType = CornersProblem
+
+
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
   def __init__(self):
@@ -537,8 +525,8 @@ def foodHeuristic(state, problem):
   your heuristic is *not* consistent, and probably not admissible!  On the other hand,
   inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
   
-  The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a 
-  Grid (see game.py) of either True or False. You can call foodGrid.asList()
+  state = tuple ( pacmanPosition, foodGrid ) where 
+  foodGrid = Grid (see game.py) of either True or False. You can call foodGrid.asList()
   to get a list of food coordinates instead.
   
   If you want access to info like walls, capsules, etc., you can query the problem.
@@ -552,7 +540,105 @@ def foodHeuristic(state, problem):
   """
   position, foodGrid = state
   "*** YOUR CODE HERE ***"
-  return 0
+
+  pacmanPosition = state[0] #pacman location
+  listOfGoals = state[1].asList()
+  # This would be the Manhattan Distance
+
+  # listOfGoals is a list of all listOfGoals.
+  # Heuristic: k =max (m(food_x, food_y)) for x and y in listOfGoals
+  # return k + min (m(food_x, pacman), m(food_y, pacman))
+  
+  a, b, dist = findFarthestTwoFoods(listOfGoals, problem.walls)
+  #print problem.walls
+  #find the distance between the farthest pair of points
+  accumulator = dist
+  #print "accumulator at 1 =", accumulator
+  #print "list of goals", listOfGoals[foodIndexes[0]]," and ", listOfGoals[foodIndexes[1]]
+  closestFoodIndex = findClosestCorner(pacmanPosition, [listOfGoals[a], listOfGoals[b]])
+  pacmanToFood = findMDistanceBetweenPairOfPoints(pacmanPosition, listOfGoals[closestFoodIndex])
+  accumulator += pacmanToFood      
+
+  return accumulator
+ 
+# returns manhattan distance 
+def findMDistanceBetweenPairOfPoints(p1, p2):
+    x1 = p1[0]
+    y1 = p1[1]
+    x2 = p2[0]
+    y2 = p2[1]
+    dist = abs(x1 - x2) + abs(y1 - y2)
+    #dist = abs(math.hypot(x2-x1, y2-y1))
+    return dist
+
+#returns the number of additional steps we have to take because of the wall.
+def findContinuousWall(p1, p2, walls):
+    x1 = p1[0]
+    y1 = p1[1]
+    x2 = p2[0]
+    y2 = p2[1]
+    
+    #find long horizontal walls
+    foundWall = False
+    longWallLoc = []
+    for j in range(y1,y2+1):
+        for i in range (x1,x2+1):
+            if walls[i][j]:  #if wall is discontinued - no extra cost.
+               foundWall = True 
+               #print"W i and j: ", i, " and ", j
+            if not walls[i][j]:
+                #print"N i and j: ", i, " and ", j
+                foundWall = False
+                break #out of inner for
+        #print "found wall: ", foundWall
+        if foundWall:
+            longWallLoc.append(j)
+    
+    longWallsCount =0 
+    longWallsCountL  = 0 
+    longWallsCountR  = 0   
+    #of all walls, find the longest one:
+    if len(longWallLoc) != 0:
+        print len(walls)
+        j = x1
+        while walls[i][longWallLoc[0]] and j< len(walls):
+                longWallsCountR +=1
+                j+=1
+        
+        i = len(walls)-1
+        while walls[i][longWallLoc[0]] and i>0:
+                longWallsCountL +=1
+                i-=1
+        
+        if j<len(walls) - 1 and i>1:
+            if longWallsCountL < longWallsCountR:
+                return 2*longWallsCountL
+            else:
+                return longWallsCountR
+        elif j >= len(walls)-1:
+            return 2*longWallsCountL
+        else:
+            return 2*longWallsCountR
+        
+                
+    return longWallsCount 
+#returns the indexes of the two foods which are farthest from each other
+def findFarthestTwoFoods(food, walls):
+    maxDistIndex1 = -1;
+    maxDistIndex2 = -1;
+    maxDist = -1;
+    for i in range(len(food)):
+        #print "i is ", i
+        for j in range(i):
+            #print "j is ", j
+            dist = findMDistanceBetweenPairOfPoints(food[i], food[j])
+            dist += findContinuousWall(food[i], food[j], walls)
+            if maxDist == -1 or maxDist < dist:
+                maxDist = dist
+                maxDistIndex1 = i
+                maxDistIndex2 = j
+            
+    return (maxDistIndex1, maxDistIndex2, maxDist)
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
@@ -579,8 +665,16 @@ class ClosestDotSearchAgent(SearchAgent):
     walls = gameState.getWalls()
     problem = AnyFoodSearchProblem(gameState)
 
+    print"gets to 0"
+    from game import Directions
+    s = Directions.SOUTH
+    w = Directions.WEST
+    e = Directions.EAST
+    n = Directions.NORTH
+    print "gets to 1"
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
+    return []
   
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
@@ -614,9 +708,12 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     that will complete the problem definition.
     """
     x,y = state
-    
+    print "TESTING for goal"
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    food = self.food
+    print "food contains ", food
+    #util.raiseNotDefined()
+    return False
 
 ##################
 # Mini-contest 1 #
