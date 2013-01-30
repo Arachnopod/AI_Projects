@@ -513,8 +513,12 @@ class AStarFoodSearchAgent(SearchAgent):
     self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
     self.searchType = FoodSearchProblem
 
+##########################################################################
 def foodHeuristic(state, problem):
   """
+  Path found with total cost of 60 in 353.5 seconds
+  Search nodes expanded: 15683
+  Pacman emerges victorious! Score: 570
   Your heuristic for the FoodSearchProblem goes here.
   
   This heuristic must be consistent to ensure correctness.  First, try to come up
@@ -525,8 +529,8 @@ def foodHeuristic(state, problem):
   your heuristic is *not* consistent, and probably not admissible!  On the other hand,
   inadmissible or inconsistent heuristics may find optimal solutions, so be careful.
   
-  state = tuple ( pacmanPosition, foodGrid ) where 
-  foodGrid = Grid (see game.py) of either True or False. You can call foodGrid.asList()
+  The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a 
+  Grid (see game.py) of either True or False. You can call foodGrid.asList()
   to get a list of food coordinates instead.
   
   If you want access to info like walls, capsules, etc., you can query the problem.
@@ -538,38 +542,46 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount'] = problem.walls.count()
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
-  position, foodGrid = state
-  "*** YOUR CODE HERE ***"
+  return foodHelper (state)
 
-  pacmanPosition = state[0] #pacman location
-  listOfGoals = state[1].asList()
-  # This would be the Manhattan Distance
+def manhattanDistance(p1, p2):
+    return abs(p1[0] - p2[0]) + abs (p1[1] - p2[1])
 
-  # listOfGoals is a list of all listOfGoals.
-  # Heuristic: k =max (m(food_x, food_y)) for x and y in listOfGoals
-  # return k + min (m(food_x, pacman), m(food_y, pacman))
+def findMostDistantGoals(now, goals):
+  maxDist = 0
+  bestFirst = goals[0]
+  bestSecond = goals[1]
+  for i in range(len(goals)):
+    thisGoal = goals.pop()
+    if len(goals) > 0:
+      for j in range(len(goals)):
+        dist = manhattanDistance(thisGoal, goals[j])
+        if dist > maxDist:
+          maxDist = dist
+          bestFirst = thisGoal
+          bestSecond = goals[j]
+    else: 
+        return maxDist, bestFirst, bestSecond
+###########################################################################
+def foodHelper(state):
+  corners = state[1].asList() # These are the corner coordinates
   
-  a, b, dist = findFarthestTwoFoods(listOfGoals, problem.walls)
-  #print problem.walls
-  #find the distance between the farthest pair of points
-  accumulator = dist
-  #print "accumulator at 1 =", accumulator
-  #print "list of goals", listOfGoals[foodIndexes[0]]," and ", listOfGoals[foodIndexes[1]]
-  closestFoodIndex = findClosestCorner(pacmanPosition, [listOfGoals[a], listOfGoals[b]])
-  pacmanToFood = findMDistanceBetweenPairOfPoints(pacmanPosition, listOfGoals[closestFoodIndex])
-  accumulator += pacmanToFood      
+  "*** YOUR CODE HERE ***"
+  currentLocation = state[0] #pacman location
 
-  return accumulator
+  goals = [] # goals is a list of unvisited goals.
+  for i in range(len(corners)):
+    goals.append(corners[i])
  
-# returns manhattan distance 
-def findMDistanceBetweenPairOfPoints(p1, p2):
-    x1 = p1[0]
-    y1 = p1[1]
-    x2 = p2[0]
-    y2 = p2[1]
-    dist = abs(x1 - x2) + abs(y1 - y2)
-    #dist = abs(math.hypot(x2-x1, y2-y1))
-    return dist
+  accumulator = 0
+  while len(goals) != 0: 
+    j = findClosestCorner (currentLocation, goals)
+    accumulator += findManhattanDistanceOfPairOfPoints(currentLocation, goals[j])
+    currentLocation = goals[j] #move the current location to goal [j]
+    goals.remove(goals[j]) # remove goal[j] from the list of unvisited goals
+         
+  return accumulator
+
 
 #returns the number of additional steps we have to take because of the wall.
 def findContinuousWall(p1, p2, walls):
@@ -618,27 +630,10 @@ def findContinuousWall(p1, p2, walls):
         elif j >= len(walls)-1:
             return 2*longWallsCountL
         else:
-            return 2*longWallsCountR
-        
-                
+            return 2*longWallsCountR              
     return longWallsCount 
-#returns the indexes of the two foods which are farthest from each other
-def findFarthestTwoFoods(food, walls):
-    maxDistIndex1 = -1;
-    maxDistIndex2 = -1;
-    maxDist = -1;
-    for i in range(len(food)):
-        #print "i is ", i
-        for j in range(i):
-            #print "j is ", j
-            dist = findMDistanceBetweenPairOfPoints(food[i], food[j])
-            dist += findContinuousWall(food[i], food[j], walls)
-            if maxDist == -1 or maxDist < dist:
-                maxDist = dist
-                maxDistIndex1 = i
-                maxDistIndex2 = j
-            
-    return (maxDistIndex1, maxDistIndex2, maxDist)
+ 
+######################################################
   
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
