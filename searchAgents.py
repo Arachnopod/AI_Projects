@@ -439,7 +439,7 @@ def findClosestCorner(cur, corners):
     minDist = -1
     for i in range(len(corners)):
         dist = findManhattanDistanceOfPairOfPoints(cur, corners[i])
-        if minDist == -1 or minDist >= dist:
+        if dist!= 0 and (minDist == -1 or minDist >= dist):
             minDist = dist
             minDistIndex = i
     return minDistIndex
@@ -574,13 +574,14 @@ def foodHelper(state):
     goals.append(corners[i])
  
   accumulator = 0
-  while len(goals) != 0: 
+  for i in range(len(goals)): 
     j = findClosestCorner (currentLocation, goals)
     accumulator += findManhattanDistanceOfPairOfPoints(currentLocation, goals[j])
     currentLocation = goals[j] #move the current location to goal [j]
-    goals.remove(goals[j]) # remove goal[j] from the list of unvisited goals
+    #goals.remove(goals[j]) # remove goal[j] from the list of unvisited goals
          
   return accumulator
+
 
 
 #returns the number of additional steps we have to take because of the wall.
