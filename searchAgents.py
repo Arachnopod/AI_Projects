@@ -543,6 +543,7 @@ def foodHeuristic(state, problem):
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
   return foodHelper (state)
+  #return kruskal (state)
 
 def manhattanDistance(p1, p2):
     return abs(p1[0] - p2[0]) + abs (p1[1] - p2[1])
@@ -574,66 +575,70 @@ def foodHelper(state):
     goals.append(corners[i])
  
   accumulator = 0
+  largestDist = 0
   for i in range(len(goals)): 
     j = findClosestCorner (currentLocation, goals)
-    accumulator += findManhattanDistanceOfPairOfPoints(currentLocation, goals[j])
+    distance = findManhattanDistanceOfPairOfPoints(currentLocation, goals[j])
+    accumulator += distance
     currentLocation = goals[j] #move the current location to goal [j]
-    #goals.remove(goals[j]) # remove goal[j] from the list of unvisited goals
-         
+    if i != 0 and(largestDist == 0 or largestDist > distance):
+        largestDist = distance
+  
+  accumulator = accumulator - largestDist       
   return accumulator
 
-
-
-#returns the number of additional steps we have to take because of the wall.
-def findContinuousWall(p1, p2, walls):
-    x1 = p1[0]
-    y1 = p1[1]
-    x2 = p2[0]
-    y2 = p2[1]
+# Kruskal
+def kruskal (state):
+    goals = state[1].asList()
+    curLoc = state[0]
+    edgeAndNodes = sortGoals(curLoc, goals)
+    nodes = [] #subgraph of the mst. Will contain triplets
+    edgeSum = 0
+    for i in range(len(edgeAndNodes)):
+        #if the end points of e are disconnected in , add e to s
+        curTriplet = edgeAndNodes[i]
+        if not curTriplet[1] in nodes or not curTriplet[2] in nodes:
+            edgeSum += curTriplet[0]
+            # we don't care if nodes was missing curTriplet[1] or curTriplet[2]
+            # because we only care whether a node is present in the set or not.
+            # so we just always add both of them
+            nodes.append(curTriplet[1])
+            nodes.append(curTriplet[2])
     
-    #find long horizontal walls
-    foundWall = False
-    longWallLoc = []
-    for j in range(y1,y2+1):
-        for i in range (x1,x2+1):
-            if walls[i][j]:  #if wall is discontinued - no extra cost.
-               foundWall = True 
-               #print"W i and j: ", i, " and ", j
-            if not walls[i][j]:
-                #print"N i and j: ", i, " and ", j
-                foundWall = False
-                break #out of inner for
-        #print "found wall: ", foundWall
-        if foundWall:
-            longWallLoc.append(j)
+    return edgeSum
+
+# returns a sortd list of triplets. list is sorted by the 0th element
+# triplet values (dist, node1, node2)
+def sortGoals(curLoc, goals):
+    allPoints = []
+    allPoints.append(curLoc)
+    for i in range(len(goals)):
+        allPoints.append(goals[i])
     
-    longWallsCount =0 
-    longWallsCountL  = 0 
-    longWallsCountR  = 0   
-    #of all walls, find the longest one:
-    if len(longWallLoc) != 0:
-        print len(walls)
-        j = x1
-        while walls[i][longWallLoc[0]] and j< len(walls):
-                longWallsCountR +=1
-                j+=1
-        
-        i = len(walls)-1
-        while walls[i][longWallLoc[0]] and i>0:
-                longWallsCountL +=1
-                i-=1
-        
-        if j<len(walls) - 1 and i>1:
-            if longWallsCountL < longWallsCountR:
-                return 2*longWallsCountL
-            else:
-                return longWallsCountR
-        elif j >= len(walls)-1:
-            return 2*longWallsCountL
-        else:
-            return 2*longWallsCountR              
-    return longWallsCount 
- 
+    edgeAndNodes = []
+    for i in range (len(allPoints)):
+        for j in range(i, len(allPoints)):
+            dist = findManhattanDistanceOfPairOfPoints(allPoints[i], allPoints[j])
+            en =(dist, allPoints[i], allPoints[j])
+            edgeAndNodes = insertEdgeAndNodes(en, edgeAndNodes)
+    return edgeAndNodes
+
+#inserts the triplet en into the right spot in edgeAndNodes
+def insertEdgeAndNodes(en, edgeAndNodes):
+    if len(edgeAndNodes) == 0:
+        edgeAndNodes.append(en)
+        return edgeAndNodes
+    
+    
+    for i in range(len(edgeAndNodes)):
+        curEn = edgeAndNodes
+        curDist = curEn[0]
+        if curDist > en[0]:
+            edgeAndNodes.insert(i, en) #insert en before element i
+            return edgeAndNodes
+    #if we get to here without returning, the element must go at the end of the list
+    edgeAndNodes.append(en)
+    return edgeAndNodes
 ######################################################
   
 class ClosestDotSearchAgent(SearchAgent):
