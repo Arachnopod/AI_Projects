@@ -462,6 +462,7 @@ def findClosestFood(cur, food):
             minDist = dist
             minDistIndex = i
     return minDistIndex
+
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
   def __init__(self):
@@ -603,19 +604,23 @@ class ClosestDotSearchAgent(SearchAgent):
     
   def findPathToClosestDot(self, gameState):
     "Returns a path (a list of actions) to the closest dot, starting from gameState"
-    # Here are some useful elements of the startState
-    startPosition = gameState.getPacmanPosition()
-    food = gameState.getFood()
-    walls = gameState.getWalls()
-    problem = AnyFoodSearchProblem(gameState)
+
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
     e = Directions.EAST
     n = Directions.NORTH
-    "*** YOUR CODE HERE ***"
-    #util.raiseNotDefined()
-    return [Directions.SOUTH]
+
+    # Here are some useful elements of the startState
+    startPosition = gameState.getPacmanPosition()
+    food = gameState.getFood()
+    walls = gameState.getWalls()
+    problem = AnyFoodSearchProblem(gameState)
+
+    # Guess the idea is to do a quick heuristic based search to find the nearest food
+    # Or maybe I should just do a quick breadth-first
+    problem.isGoalState(startPosition)
+    return [w]
   
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
@@ -649,9 +654,20 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     that will complete the problem definition.
     """
     x,y = state
-    
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Food is formatted food[column][row]
+    # Similarly, x,y is col,row
+    #print "location now", x,y
+    lengthOfRows = self.food[0].__len__()
+    print "food in this location?", self.food.data[x][lengthOfRows - 1 - y]
+    return self.food.data[x][lengthOfRows - 1 - y]
+
+    # Maybe this should be:
+        # IF the current searchPos.contains(food) &&
+            # man_Dist(curLoc,closestFood) == man_Dist(curLoc, searchPos)
+        # THEN return True
+        # ELSE return False
+#    if
+    #util.raiseNotDefined()
 
 ##################
 # Mini-contest 1 #
