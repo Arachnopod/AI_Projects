@@ -94,8 +94,9 @@ def depthFirstSearch(problem):
     e = Directions.EAST
     n = Directions.NORTH
 
-    startState = (problem.getStartState(), "No Direction", 1)
-    directions, possible_path = recursiveDFS (problem, startState, explored = [problem.getStartState()]) #problem and current state's location
+    startStateNode = (problem.getStartState(), "No Direction", 1)
+    #startState = problem.getStartState()
+    directions, possible_path = recursiveDFS (problem, startStateNode, explored = [problem.getStartState()]) #problem and current state's location
 
     path = []
     for curDir in directions:
@@ -121,21 +122,22 @@ def depthFirstSearch(problem):
 # explored = the explored nodes (an array)
 
 # note: we use the boolean in orver to backtrack
-def recursiveDFS (problem, curState, dirs = [], explored = [], possible_path = False):
-    # print "Is 11 the goal state ", problem.isGoalState((1,1))
-    if problem.isGoalState(curState[0]):
+def recursiveDFS (problem, curStateNode, dirs = [], explored = [], possible_path = False):
+    curState = curStateNode[0]
+    curDir = curStateNode[1]
+    if problem.isGoalState(curState):
     #add current state to dirs:
-        dirs.append(curState[1]); #append the direction we had to take
+        dirs.append(curDir); #append the direction we had to take
         return dirs, True
 
     else: #if we are not in a goal state
         #go down the right subtree
-        successors = problem.getSuccessors(curState[0])
+        successors = problem.getSuccessors(curState)
 
         for successorNumber in range(len(successors)):
             if successors[successorNumber][0] not in explored:
-                explored.append(successors[successorNumber][0])
-                dirs.append(successors[successorNumber][1]) #append the direction we had to take
+                explored.append(successors[successorNumber][0]) #append state
+                dirs.append(successors[successorNumber][1]) #append the direction 
                 dirs, possible_path = recursiveDFS(problem, successors[successorNumber], dirs, explored, possible_path)
             if possible_path:
                 return dirs, True
@@ -157,9 +159,9 @@ def breadthFirstSearch(problem):
         return []
     #print "start state: ", startState
     directions, possible_path = BFSHelper (problem, curState=startState, frontier = [startStateNode]) #problem and current state's location
-    if not possible_path: print "COULDN'T FIND ANYTHING"
+    #if not possible_path: print "COULDN'T FIND ANYTHING"
     path = bfsPathHelper(directions)
-    print "final path returned: ", path
+    #print "final path returned: ", path
     #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
     #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
     #print "one successor: ",successor[0] #get the position of the successor
@@ -183,10 +185,6 @@ def breadthFirstSearch(problem):
 def BFSHelper (problem, curState, frontier, explored = [], possible_path = False):
     #Base case
     while len(frontier) is not 0:
-        #print "iterating"
-        #print "frontier now: ", frontier
-        #print "explored now: ", explored
-
         # frontier is a list of triplets
         parentState = curState
         curStateNode = frontier.pop(0)
@@ -215,6 +213,7 @@ def bfsPathHelper(explored):
     saveThis = toDir(explored[0][0][1])
     path = []
     pathElement = explored.pop()
+    parent = pathElement[0][0]
     while len(explored) is not 0:
         # Add direction to this location to path list
         path.append(toDir(pathElement[0][1]))
