@@ -4,6 +4,7 @@ ecp456, ethanp@utexas.edu
 Partner names: 
 Nona Sirakova
 Ethan Petuchowski
+
 __________________________________________________________________________________________________
 
 Contribution of each team member to the work:
@@ -42,5 +43,9 @@ add up the distances between each two neighbors, we consider the weight of n edg
 In fact, if we are to travel a path from node 1 to node n, there are n-1 edges. 
 Thus, without the subtraction we may be overcounting. With the subtraction, we are never overcounting
 
+__________________________________________________________________________________________________
+
+Running the code: We ran our code on Python 2.7
+Our code compiles and runs with the commands and flags provided in the assignment.
 __________________________________________________________________________________________________
 
