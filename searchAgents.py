@@ -293,6 +293,9 @@ class CornersProblem(search.SearchProblem):
     self._visited, self._visitedlist = {}, []
     self.startState = self.makeStartState()
     
+  #states are now a tuple of type (position, [boolean values indicating visited corners])
+  #For example if pacman is at location (3, 2) and on his current path he has visited corner (1,1)
+  # the state would be ((3,2), [True, False, False, False])
   def makeStartState(self):
     startPos = self.startingPosition
     cornersVisited = [False, False, False, False];
@@ -306,15 +309,16 @@ class CornersProblem(search.SearchProblem):
     return startingPacmanState
 
       
-    
+  #states are now a tuple of type (position, [boolean values indicating visited corners])
+  #For example if pacman is at location (3, 2) and on his current path he has visited corner (1,1)
+  # the state would be ((3,2), [True, False, False, False])
   def getStartState(self):
     "Returns the start state (in your state space, not the full Pacman state space)"
     "*** YOUR CODE HERE ***"
-    #return self.startingPosition
     return self.startState
-    #util.raiseNotDefined()
     
-  
+  #goal state is any state where all corners are visited. So for all (x,y)
+  # the state ((x, y), [True, True, True, True]) is a goal state
   def isGoalState(self, state):
     "Returns whether this search state is a goal state of the problem"
     "*** YOUR CODE HERE ***"
@@ -388,7 +392,7 @@ class CornersProblem(search.SearchProblem):
       if self.walls[x][y]: return 999999
     return len(actions)
 
-
+#The algorithm for this heuristic is described in our readme.txt file
 def cornersHeuristic(state, problem):
   """
   A heuristic for the CornersProblem that you defined.
@@ -713,7 +717,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     food = self.food.asList()
     if state in food:
         return True
-    print "Food not eaten yet!!!!!!!!!!!!!", len(food)
     return False
 
 ##################

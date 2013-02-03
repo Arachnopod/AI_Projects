@@ -84,18 +84,17 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    # util.raiseNotDefined()
+
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
     e = Directions.EAST
     n = Directions.NORTH
 
+    #nodes contain the state, the direction we had to take to get to the state 
+    #and the cost of taking this particular edge. 
     startStateNode = (problem.getStartState(), "No Direction", 1)
-    #startState = problem.getStartState()
+    
     directions, possible_path = recursiveDFS (problem, startStateNode, explored = [problem.getStartState()]) #problem and current state's location
 
     path = []
@@ -105,11 +104,7 @@ def depthFirstSearch(problem):
         if curDir is 'East': path.append(e)
         if curDir is 'West': path.append(w)
 
-    print "final path returned: ", path
-    #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
-    #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
-    #print "one successor: ",successor[0] #get the position of the successor
-    #print "SUCCESSOR OF O: ", problem.getSuccessors(successor[0]) #successor of the successor
+    #print "final path returned: ", path
     return  path #[s,s,w,s,w,w,s,w]
 
 
@@ -127,7 +122,7 @@ def recursiveDFS (problem, curStateNode, dirs = [], explored = [], possible_path
     curDir = curStateNode[1]
     if problem.isGoalState(curState):
     #add current state to dirs:
-        dirs.append(curDir); #append the direction we had to take
+        #dirs.append(curDir); #append the direction we had to take
         return dirs, True
 
     else: #if we are not in a goal state
@@ -154,34 +149,31 @@ def breadthFirstSearch(problem):
     n = Directions.NORTH
 
     startState = problem.getStartState()
-    startStateNode = (problem.getStartState(), "No Direction", 1)
+    #nodes contain the state, the direction we had to take to get to the state 
+    #and the cost of taking this particular edge. 
+    startStateNode = (problem.getStartState(), "No Direction", 1)  
     if problem.isGoalState(problem.getStartState()):
         return []
-    #print "start state: ", startState
     directions, possible_path = BFSHelper (problem, curState=startState, frontier = [startStateNode]) #problem and current state's location
-    #if not possible_path: print "COULDN'T FIND ANYTHING"
     path = bfsPathHelper(directions)
-    #print "final path returned: ", path
-    #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
-    #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
-    #print "one successor: ",successor[0] #get the position of the successor
-    #print "SUCCESSOR OF O: ", problem.getSuccessors(successor[0]) #successor of the successor
     return  path #[s,s,w,s,w,w,s,w]
 
 
     # Takes the problem and the current state
 # curState[0] = loc
-# curState[0] = dir
-# curState[0] = score
+# curState[1] = dir
+# curState[2] = score
 # dirs = path to the food
 # frontier = non explored nodes (the stack) 
 # explored = the explored nodes (an array)
 
-#curState = (x, y)
+#curState = state
 #frontier = list of stateNodes
 #stateNodes = triplet (state, direction, path cost)
 #explored = list of tuples: (newState, dir, pathcost), (newState, dir, pathcost)
 # note: we use the boolean in orver to backtrack
+
+# recursively find BFS solution
 def BFSHelper (problem, curState, frontier, explored = [], possible_path = False):
     #Base case
     while len(frontier) is not 0:
@@ -205,6 +197,7 @@ def BFSHelper (problem, curState, frontier, explored = [], possible_path = False
                     explored.append([successorsTriplets[successorNumber], curState])
     return explored, False
 
+# given a list of triplets with explored states, it extracts the path 
 def bfsPathHelper(explored):
     """
     explored is a list of these: [((1,2), "direction", 1), ((1,3), "direction", 1)]
@@ -217,9 +210,7 @@ def bfsPathHelper(explored):
     while len(explored) is not 0:
         # Add direction to this location to path list
         path.append(toDir(pathElement[0][1]))
-        #print "path updated to: ", path
-        #print "explored now: ", explored
-        # save parent location so it can be looked for
+        #  save parent location so it can be looked for
         #  similar to a linked list
         parent = pathElement[1]
         while parent is not pathElement[0][0] and len(explored) is not 0:
@@ -227,10 +218,12 @@ def bfsPathHelper(explored):
     if parent is pathElement[0][0]:
         path.append(toDir(pathElement[0][1]))
     #path.append(saveThis)
-    #print path[::-1]
     return path[::-1]
 
 
+#direction is a string with a direction, 
+#this method returns n,s,w,e depending on which 
+#direction string gets passed in
 def toDir(direction):
     from game import Directions
     s = Directions.SOUTH
@@ -247,18 +240,16 @@ def toDir(direction):
         return w
 
 
+# implemented as shown in the book
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    # util.raiseNotDefined()
     from game import Directions
     from util import PriorityQueue
     s = Directions.SOUTH
     w = Directions.WEST
     e = Directions.EAST
     n = Directions.NORTH
-    print "Var s is: ", s
-    #foodState = ((1,1), 'South', 1);
-    #print recursiveDFS (problem, foodState)
+    #print "Var s is: ", s
     startState = [(problem.getStartState(), "No Direction", 0), 0]
     if problem.isGoalState(problem.getStartState()):
         return []
@@ -268,11 +259,6 @@ def uniformCostSearch(problem):
     directions, possible_path = UCSHelper (problem, curState=startState, frontier = startFrontier)
     if not possible_path: print "COULDN'T FIND ANYTHING"
     path = ucsPathHelper(directions)
-    #print "final path returned: ", path
-    #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
-    #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
-    #print "one successor: ",successor[0] #get the position of the successor
-    #print "SUCCESSOR OF O: ", problem.getSuccessors(successor[0]) #successor of the successor
     return  path #[s,s,w,s,w,w,s,w]
 
 
@@ -292,9 +278,6 @@ def UCSHelper (problem, curState, frontier, explored = [], possible_path = False
 
     #Base case
     while not frontier.isEmpty():
-        print "iterating"
-        # print "frontier now: ", frontier
-        print "explored now: ", explored
 
         # frontier is a PriorityQueue
         # parentState = curState
@@ -302,17 +285,12 @@ def UCSHelper (problem, curState, frontier, explored = [], possible_path = False
         curState = frontier.pop()
         oldCost = curState[1]
 
-        print "curState now: ", curState
         successors = problem.getSuccessors(curState[0][0])
 
         for successorNumber in range(len(successors)):
             if successors[successorNumber][0] not in [i[0][0] for i in explored]:
                 if problem.isGoalState(successors[successorNumber][0]):
-                    #print successors[successorNumber]
-                    #print "Found the GOAL"
                     explored.append([successors[successorNumber], curState[0]])
-                    #for i in range(len(explored)):
-                    #    print explored[i]
                     return explored, True
                 else:
                     thisCost = successors[successorNumber][2]
@@ -335,8 +313,7 @@ def ucsPathHelper(explored):
     while len(explored) is not 0:
         # Add direction to this location to path list
         path.append(toDir(pathElement[0][1]))
-        #print "path updated to: ", path
-        #print "explored now: ", explored
+
         # save parent location so it can be looked for
         #  similar to a linked list
         parent = pathElement[1]
@@ -345,8 +322,6 @@ def ucsPathHelper(explored):
             pathElement = explored.pop()
             if len(explored) is 0 and parent is pathElement[0]:
                 path.append(toDir(pathElement[0][1]))
-    #path.append(saveThis)
-    #print path[::-1]
     return path[::-1]
 
 
@@ -377,9 +352,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     n = Directions.NORTH
 
     initialState = (problem.getStartState(), "No Direction", 0)
-    print"This is the start state at the very beginning: ", initialState
     initialStateNode = (initialState, 0) #state, g(n)
-    print"This is the start state node: ", initialStateNode
     #state node, f(n)
     frontier = PriorityQueue()
     frontier.push(initialStateNode, heuristic(problem.getStartState(),problem))
@@ -388,19 +361,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     explored.append([initialStateNode, initialStateNode])
     if problem.isGoalState(problem.getStartState()):
         return []
+    
     #path = the path
     #foundSol = true if path found; false if no path found
-    
     path, foundSol= aStarHelper(problem=problem, curStateNode=initialStateNode,frontier=frontier,heuristic=heuristic, explored = explored)
-    if not foundSol: print "COULDN'T FIND ANYTHING"
 
     path = aStarPathHelper(path)
     print "returning processed path: ", path
-    #print "final path returned: ", path
-    #print "these are the successors: ", problem.getSuccessors(problem.getStartState())[0]
-    #successor = problem.getSuccessors(problem.getStartState())[0] #get first successor
-    #print "one successor: ",successor[0] #get the position of the successor
-    #print "SUCCESSOR OF O: ", problem.getSuccessors(successor[0]) #successor of the successor
     return  path #[s,s,w,s,w,w,s,w]
 
 #curStateNode = a friontierNode
@@ -430,7 +397,7 @@ def aStarHelper(problem, curStateNode, frontier, heuristic, explored):
                 oldFn = explored[i][0][1] + heuristic(explored[i][0][0][0], problem)
                 #oldFN = FN of node in explored
                 if oldFn > successorFn:
-                   print "In if statement in aStarHelper. This statement needs to be fixed."
+                   
                    # in explored, change the first element of the given tuple to be thisSuccessor
                    toAppend = [(thisSuccessor, successorGn), curStateNode]
                    explored.append(toAppend)
@@ -451,7 +418,6 @@ def aStarPathHelper(explored):
     explored is a list of these: [((1,2), "direction", 1), ((1,3), "direction", 1)]
                   which is also: [ child, parent ]
     """
-    print "explored: ", explored
     saveThis = toDir(explored[0][0][0][1]) #dir
     path = []
     pathElement = explored.pop() #[stateNodeChild, stateNodeParent]
@@ -466,14 +432,10 @@ def aStarPathHelper(explored):
         if len(explored) is not 0: pathElement = explored.pop()
         
         while parent != pathElement[0][0] and len(explored) is not 0:
-            #print "parent: ", parent[0]
-            #print "pathEl: ", pathElement[0][0][0]
-            #print parent == pathElement[0][0]
             pathElement = explored.pop()
             if len(explored) is 0 and parent is pathElement[0][0]:
                 path.append(toDir(pathElement[0][0][1]))
-    #path.append(saveThis)
-    #print path[::-1]
+
     if None in path:
         path.remove(None)
     return path[::-1]
